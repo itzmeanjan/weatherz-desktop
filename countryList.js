@@ -1,16 +1,16 @@
 'use strict';
-const fs = require('fs');
+const { readFile } = require('fs');
 module.exports = {
-    get: () => {
-        let regex = new RegExp('^(weather[A-Z]{2}\.json)$');
-        let data = [];
-        try {
-            data = fs.readdirSync('./data/').filter((val) => regex.test(val));
-        } catch (e) {
-            data = undefined;
-        }
-        finally {
-            return data;
-        }
-    }
+    get: new Promise((resolve, reject) => {
+        readFile('./data/iso2Country.json', (err, data) => {
+            if (err !== null && err !== undefined)
+                reject(undefined);
+            else
+                resolve(
+                    JSON.parse(
+                        data.toString()
+                    )
+                );
+        });
+    })
 }

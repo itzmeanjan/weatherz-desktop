@@ -8,8 +8,8 @@ let mainWindow;
 app.addListener('ready', () => {
     mainWindow = new BrowserWindow(
         {
-            width: 640,
-            height: 360,
+            width: require('electron').screen.getPrimaryDisplay().size.width * .64,
+            height: require('electron').screen.getPrimaryDisplay().size.height * .4,
             center: true,
             autoHideMenuBar: true,
             webPreferences: {
@@ -19,6 +19,13 @@ app.addListener('ready', () => {
     );
     mainWindow.loadFile("./pages/main.html");
 });
-ipcMain.on('DOMContentLoaded', (event) => {
-    event.reply('CountryList', require('./countryList').get());
+ipcMain.on('DOMContentLoaded', (event, data) =>
+    require('./countryList').get.then(
+        (data) => {
+            event.reply('CountryList', data);
+        },
+        (err) => event.reply('CountryList', err)
+    ));
+ipcMain.on('SelectionChanged', (event, data) => {
+    console.log(data);
 });
