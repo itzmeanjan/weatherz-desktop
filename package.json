@@ -1,0 +1,33 @@
+{
+  "name": "weatherz-desktop",
+  "version": "1.0.0",
+  "description": "A simple JavaScript Desktop Application for fetching and displaying Weather Data of almost 6.36M places.",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/itzmeanjan/weatherz-desktop.git"
+  },
+  "keywords": [
+    "weather",
+    "js",
+    "geonames",
+    "map",
+    "electron",
+    "data",
+    "mapnik",
+    "node"
+  ],
+  "author": "Anjan Roy <anjanroy@yandex.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/itzmeanjan/weatherz-desktop/issues"
+  },
+  "homepage": "https://github.com/itzmeanjan/weatherz-desktop#readme",
+  "devDependencies": {
+    "electron": "^5.0.6"
+  }
+}
