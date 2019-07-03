@@ -5,7 +5,7 @@ html, body {
     height: 100%;
 }
 body{
-    background-color: #88dce293
+    background-image: url("../map/world.jpeg");
 }
 #mainDiv {
     position: absolute;

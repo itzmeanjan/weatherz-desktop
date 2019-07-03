@@ -13,7 +13,7 @@ except ImportError as e:
 def renderIt(style_sheet: str = abspath(join(dirname(__file__), 'world.xml'))):
     target = False
     try:
-        myMap = mapnik.Map(6400, 3600)
+        myMap = mapnik.Map(720, 480)
         mapnik.load_map(myMap, style_sheet)
         myMap.zoom_all()
         mapnik.render_to_file(myMap, 'world.jpeg', 'jpeg100')

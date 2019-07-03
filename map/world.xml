@@ -1,15 +1,7 @@
-<Map background-color="#58FAD0" srs="+proj=longlat +datum=WGS84 +no_defs ">
+<Map background-color="#bdbdbd" srs="+proj=longlat +datum=WGS84 +no_defs ">
     <Style name="style1">
         <Rule>
-            <PolygonSymbolizer fill="#585858" />
-        </Rule>
-        <Rule>
-            <LineSymbolizer stroke="#deafbeef" stroke-width="0.6" />
-        </Rule>
-        <Rule>
-            <TextSymbolizer face-name="DejaVu Sans Book" size="10" fill="#ffffff">
-                [NAME_0]
-            </TextSymbolizer>
+            <PolygonSymbolizer fill="#424242" />
         </Rule>
     </Style>
     <Layer name="layer1">

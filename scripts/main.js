@@ -6,6 +6,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
             let selectTag = document.createElement('select');
             selectTag.id = 'countrySelect';
             selectTag.autofocus = true;
+            selectTag.style.color = '#424242';
+            selectTag.style.backgroundColor = '#CEF6EC';
             selectTag.addEventListener('change',
                 () => ipcRenderer.send('CountrySelectionChanged', selectTag.options[selectTag.selectedIndex].value)
             );
@@ -26,7 +28,6 @@ window.addEventListener('DOMContentLoaded', (event) => {
             }
             else
                 document.getElementById('mainDiv').replaceChild(selectTag, document.getElementById('countrySelect'));
-            ipcRenderer.send('CountrySelectionChanged', selectTag.options[selectTag.selectedIndex].value);
         }
         else
             document.getElementById('waitText').innerText = 'Something went wrong :/';
@@ -66,6 +67,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
             let selectTag = document.createElement('select');
             selectTag.autofocus = true;
             selectTag.id = 'placeSelect';
+            selectTag.style.color = '#424242';
+            selectTag.style.backgroundColor = '#CEF6EC';
             selectTag.addEventListener('change',
                 () =>
                     ipcRenderer.send('PlaceSelectionChanged', selectTag.options[selectTag.selectedIndex].value)
