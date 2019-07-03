@@ -1,0 +1,22 @@
+<Map background-color="#58FAD0" srs="+proj=longlat +datum=WGS84 +no_defs ">
+    <Style name="style1">
+        <Rule>
+            <PolygonSymbolizer fill="#585858" />
+        </Rule>
+        <Rule>
+            <LineSymbolizer stroke="#deafbeef" stroke-width="0.6" />
+        </Rule>
+        <Rule>
+            <TextSymbolizer face-name="DejaVu Sans Book" size="10" fill="#ffffff">
+                [NAME_0]
+            </TextSymbolizer>
+        </Rule>
+    </Style>
+    <Layer name="layer1">
+        <StyleName>style1</StyleName>
+        <Datasource>
+            <Parameter name="file">../data/gadm36_0.shp</Parameter>
+            <Parameter name="type">shape</Parameter>
+        </Datasource>
+    </Layer>
+</Map>
