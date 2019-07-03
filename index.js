@@ -19,13 +19,25 @@ app.addListener('ready', () => {
     );
     mainWindow.loadFile("./pages/main.html");
 });
-ipcMain.on('DOMContentLoaded', (event, data) =>
+let currentCountrySelection, currentPlaceSelection;
+ipcMain.on('DOMContentLoaded', (event) =>
     require('./countryList').get.then(
-        (data) => {
-            event.reply('CountryList', data);
-        },
+        (data) => event.reply('CountryList', data),
         (err) => event.reply('CountryList', err)
     ));
-ipcMain.on('SelectionChanged', (event, data) => {
-    console.log(data);
+ipcMain.on('CountrySelectionChanged', (event, data) => {
+    currentCountrySelection = data; // selection gets changed
+    require('./placeList').get(currentCountrySelection).then(
+        (data) => event.reply('CountrySelectionChanged', data),
+        (err) => event.reply('CountrySelectionChanged', err));
 });
+ipcMain.on('PlaceSelectionChanged', (event, data) => {
+    currentPlaceSelection = data;
+    console.log(currentPlaceSelection);
+});
+
+ipcMain.on('BackClicked', (event) =>
+    require('./countryList').get.then(
+        (data) => event.reply('CountryList', data),
+        (err) => event.reply('CountryList', err)
+    ));
