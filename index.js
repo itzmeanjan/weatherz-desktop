@@ -35,9 +35,3 @@ ipcMain.on('PlaceSelectionChanged', (event, data) => {
     currentPlaceSelection = data;
     console.log(currentPlaceSelection);
 });
-
-ipcMain.on('BackClicked', (event) =>
-    require('./countryList').get.then(
-        (data) => event.reply('CountryList', data),
-        (err) => event.reply('CountryList', err)
-    ));

@@ -1,43 +1,65 @@
 'use strict';
 const { ipcRenderer } = require('electron');
 window.addEventListener('DOMContentLoaded', (event) => {
+    let selectCountry;
+    let placeData;
     ipcRenderer.on('CountryList', (event, data) => {
         if (data !== undefined && data !== null) {
-            let selectTag = document.createElement('select');
-            selectTag.id = 'countrySelect';
-            selectTag.autofocus = true;
-            selectTag.style.color = '#424242';
-            selectTag.style.backgroundColor = '#CEF6EC';
-            selectTag.addEventListener('change',
-                () => ipcRenderer.send('CountrySelectionChanged', selectTag.options[selectTag.selectedIndex].value)
+            selectCountry = document.createElement('select');
+            selectCountry.id = 'countrySelect';
+            selectCountry.autofocus = true;
+            selectCountry.style.color = '#424242';
+            selectCountry.style.backgroundColor = '#CEF6EC';
+            selectCountry.addEventListener('change',
+                () => {
+                    ipcRenderer.send('CountrySelectionChanged', selectCountry.options[selectCountry.selectedIndex].value);
+                }
             );
             Object.keys(data).forEach((elem) => {
                 let tmpOption = document.createElement('option');
                 tmpOption.value = elem;
                 tmpOption.text = data[elem];
-                selectTag.appendChild(tmpOption);
+                selectCountry.appendChild(tmpOption);
             });
-            if (document.getElementById('waitText') !== undefined && document.getElementById('waitText') !== null) {
-                document.getElementById('mainDiv').replaceChild(selectTag, document.getElementById('waitText'));
-                document.getElementById('mainDiv').appendChild(document.createElement('br'));
-            }
-            else if (document.getElementById('placeSelect') !== undefined && document.getElementById('placeSelect') !== null) {
-                document.getElementById('mainDiv').replaceChild(selectTag, document.getElementById('placeSelect'));
-                document.getElementById('mainDiv').removeChild(document.getElementById('backButton'));
-                document.getElementById('mainDiv').removeChild(document.getElementById('addButton'));
-            }
-            else
-                document.getElementById('mainDiv').replaceChild(selectTag, document.getElementById('countrySelect'));
+            document.getElementById('mainDiv').replaceChild(selectCountry, document.getElementById('waitText'));
+            document.getElementById('mainDiv').appendChild(document.createElement('br'));
         }
         else
             document.getElementById('waitText').innerText = 'Something went wrong :/';
     });
+
+    function dataListCreator(attachHere, target, id, data) {
+        let datalistElem;
+        if (document.getElementById(id) !== undefined && document.getElementById(id) !== null) {
+            datalistElem = document.getElementById(id);
+            while (datalistElem.firstChild) { datalistElem.removeChild(datalistElem.firstChild); }
+        }
+        else {
+            datalistElem = document.createElement('datalist');
+            datalistElem.id = id;
+            attachHere.appendChild(datalistElem);
+            target.setAttribute('list', id);
+        }
+        data.forEach((elem) => {
+            let optionElem = document.createElement('option');
+            optionElem.setAttribute('value', elem);
+            datalistElem.appendChild(optionElem);
+        });
+    }
+
     ipcRenderer.on('CountrySelectionChanged', (event, data) => {
         if (data !== undefined && data !== null && data.length > 0) {
+            placeData = data;
+            console.log(placeData);
             let backButton = document.createElement('button');
             backButton.id = 'backButton';
-            backButton.addEventListener('click', (ev) =>
-                ipcRenderer.send('BackClicked'));
+            backButton.addEventListener('click', (ev) => {
+                document.getElementById('mainDiv').removeChild(document.getElementById('backButton'));
+                document.getElementById('mainDiv').removeChild(document.getElementById('addButton'));
+                document.getElementById('mainDiv').replaceChild(selectCountry, document.getElementById('searchPlace'));
+                if (document.getElementById('dataList') !== undefined && document.getElementById('dataList') !== null)
+                    document.getElementById('mainDiv').removeChild(document.getElementById('dataList'));
+            });
             backButton.textContent = 'Back';
             backButton.style.backgroundColor = '#6644aa';
             backButton.style.border = '1px';
@@ -64,26 +86,42 @@ window.addEventListener('DOMContentLoaded', (event) => {
             addButton.style.paddingBottom = '6px';
             addButton.style.marginTop = '6px';
             addButton.style.marginLeft = '20px';
-            let selectTag = document.createElement('select');
-            selectTag.autofocus = true;
-            selectTag.id = 'placeSelect';
-            selectTag.style.color = '#424242';
-            selectTag.style.backgroundColor = '#CEF6EC';
-            selectTag.addEventListener('change',
-                () =>
-                    ipcRenderer.send('PlaceSelectionChanged', selectTag.options[selectTag.selectedIndex].value)
+            let searchPlace = document.createElement('input');
+            searchPlace.id = 'searchPlace';
+            searchPlace.style.borderRadius = '12px';
+            searchPlace.setAttribute('size', '35');
+            searchPlace.setAttribute('type', 'search');
+            searchPlace.setAttribute('placeholder', 'Place Name');
+            searchPlace.style.color = '#424242';
+            searchPlace.style.backgroundColor = '#CEF6EC';
+            searchPlace.addEventListener('input',
+                () => {
+                    if (document.getElementById('searchPlace').value.length > 2) {
+                        dataListCreator(document.getElementById('mainDiv'), document.getElementById('searchPlace'), 'dataList',
+                            placeData.filter((elem) => {
+                                try {
+                                    return document.getElementById('searchPlace').value.split(' ').filter((el) => el.length > 0).some((el) =>
+                                        new RegExp(el, 'i').test(elem)
+                                    );
+                                }
+                                catch (e) {
+                                    return false;
+                                }
+                            }
+                            ));
+                    }
+                    else {
+                        if (document.getElementById('dataList') !== undefined && document.getElementById('dataList') !== null)
+                            document.getElementById('mainDiv').removeChild(document.getElementById('dataList'));
+                    }
+                }
             );
-            data.forEach((elem) => {
-                let tmpOption = document.createElement('option');
-                tmpOption.value = elem;
-                tmpOption.text = elem;
-                selectTag.appendChild(tmpOption);
-            });
-            document.getElementById('mainDiv').replaceChild(selectTag, document.getElementById('countrySelect'));
+            document.getElementById('mainDiv').replaceChild(searchPlace, document.getElementById('countrySelect'));
             document.getElementById('mainDiv').appendChild(backButton);
             document.getElementById('mainDiv').appendChild(addButton);
-            ipcRenderer.send('PlaceSelectionChanged', selectTag.options[selectTag.selectedIndex].value);
         }
+        else
+            window.alert('Err: No Place Found !!!');
     });
     ipcRenderer.send('DOMContentLoaded');
 });
