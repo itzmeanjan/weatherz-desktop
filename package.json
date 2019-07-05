@@ -4,7 +4,7 @@
   "description": "A simple JavaScript Desktop Application for fetching and displaying Weather Data of almost 6.36M places.",
   "main": "index.js",
   "scripts": {
-    "start": "electron index.js",
+    "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -29,5 +29,8 @@
   "homepage": "https://github.com/itzmeanjan/weatherz-desktop#readme",
   "devDependencies": {
     "electron": "^5.0.6"
+  },
+  "dependencies": {
+    "xml2js": "^0.4.19"
   }
 }

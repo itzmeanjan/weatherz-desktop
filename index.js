@@ -36,7 +36,8 @@ ipcMain.on('PlaceSelectionChanged', (event, data) => {
 });
 
 ipcMain.on('AddPlace', (event, data) => {
-    require('./weatherURL').get(currentCountrySelection, currentCountrySelection).then((value) => {
+    currentPlaceSelection = data;
+    require('./weatherURL').get(currentCountrySelection, currentPlaceSelection).then((value) => {
         selectedPlace = value;
         console.log(selectedPlace);
     }, (err) => {
