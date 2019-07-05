@@ -38,8 +38,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
             datalistElem = document.createElement('datalist');
             datalistElem.id = id;
             attachHere.appendChild(datalistElem);
-            target.setAttribute('list', id);
         }
+        target.setAttribute('list', id);
         data.forEach((elem) => {
             let optionElem = document.createElement('option');
             optionElem.setAttribute('value', elem);
@@ -50,7 +50,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
     ipcRenderer.on('CountrySelectionChanged', (event, data) => {
         if (data !== undefined && data !== null && data.length > 0) {
             placeData = data;
-            console.log(placeData);
+            let minElementLength = 999;
+            placeData.forEach((el) => {
+                if (el.length <= minElementLength) minElementLength = el.length;
+            });
             let backButton = document.createElement('button');
             backButton.id = 'backButton';
             backButton.addEventListener('click', (ev) => {
@@ -73,7 +76,11 @@ window.addEventListener('DOMContentLoaded', (event) => {
             backButton.style.marginTop = '6px';
             let addButton = document.createElement('button');
             addButton.id = 'addButton';
-            addButton.addEventListener('click', (ev) => { });
+            addButton.addEventListener('click', (ev) => {
+                if (placeData.some((el) =>
+                    el === document.getElementById('searchPlace').value))
+                    ipcRenderer.send('AddPlace', document.getElementById('searchPlace').value);
+            });
             addButton.textContent = 'Add Place';
             addButton.style.backgroundColor = '#44de22';
             addButton.style.border = '1px';
@@ -94,25 +101,30 @@ window.addEventListener('DOMContentLoaded', (event) => {
             searchPlace.setAttribute('placeholder', 'Place Name');
             searchPlace.style.color = '#424242';
             searchPlace.style.backgroundColor = '#CEF6EC';
-            searchPlace.addEventListener('input',
+            searchPlace.addEventListener('change',
                 () => {
-                    if (document.getElementById('searchPlace').value.length > 2) {
-                        dataListCreator(document.getElementById('mainDiv'), document.getElementById('searchPlace'), 'dataList',
-                            placeData.filter((elem) => {
-                                try {
-                                    return document.getElementById('searchPlace').value.split(' ').filter((el) => el.length > 0).some((el) =>
-                                        new RegExp(el, 'i').test(elem)
-                                    );
-                                }
-                                catch (e) {
-                                    return false;
-                                }
+                    if (document.getElementById('searchPlace').value.length >= minElementLength) {
+                        let tmpStore = placeData.filter((elem) => {
+                            try {
+                                return document.getElementById('searchPlace').value.split(' ').filter((el) => el.length > 0).some((el) =>
+                                    new RegExp(`^(${el})`, 'i').test(elem)
+                                );
                             }
-                            ));
+                            catch (e) {
+                                return false;
+                            }
+                        }
+                        );
+                        if (!tmpStore.some((el) =>
+                            el === document.getElementById('searchPlace').value))
+                            dataListCreator(document.getElementById('mainDiv'), document.getElementById('searchPlace'), 'dataList',
+                                tmpStore);
                     }
                     else {
-                        if (document.getElementById('dataList') !== undefined && document.getElementById('dataList') !== null)
+                        if (document.getElementById('dataList') !== undefined && document.getElementById('dataList') !== null) {
+                            document.getElementById('searchPlace').setAttribute('list', undefined);
                             document.getElementById('mainDiv').removeChild(document.getElementById('dataList'));
+                        }
                     }
                 }
             );

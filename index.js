@@ -19,7 +19,7 @@ app.addListener('ready', () => {
     );
     mainWindow.loadFile("./pages/main.html");
 });
-let currentCountrySelection, currentPlaceSelection;
+let currentCountrySelection, currentPlaceSelection, selectedPlace;
 ipcMain.on('DOMContentLoaded', (event) =>
     require('./countryList').get.then(
         (data) => event.reply('CountryList', data),
@@ -33,5 +33,13 @@ ipcMain.on('CountrySelectionChanged', (event, data) => {
 });
 ipcMain.on('PlaceSelectionChanged', (event, data) => {
     currentPlaceSelection = data;
-    console.log(currentPlaceSelection);
+});
+
+ipcMain.on('AddPlace', (event, data) => {
+    require('./weatherURL').get(currentCountrySelection, currentCountrySelection).then((value) => {
+        selectedPlace = value;
+        console.log(selectedPlace);
+    }, (err) => {
+        console.log(err);
+    });
 });
