@@ -45,11 +45,11 @@ class GeoLocation {
 
     static fromJSON(jsonObject) {
         let geoLocation = new GeoLocation(null, null, null, null, null);
-        geoLocation.name = jsonObject.name;
-        geoLocation.type = jsonObject.type;
-        geoLocation.country = jsonObject.country;
-        geoLocation.tz = TimeZone.fromJSON(jsonObject.timezone);
-        geoLocation.lonlat = LonLat.fromJSON(jsonObject.location);
+        geoLocation.name = jsonObject.name[0];
+        geoLocation.type = jsonObject.type[0];
+        geoLocation.country = jsonObject.country[0];
+        geoLocation.tz = TimeZone.fromJSON(jsonObject.timezone[0].$);
+        geoLocation.lonlat = LonLat.fromJSON(jsonObject.location[0].$);
         return geoLocation;
     }
 }
@@ -62,8 +62,8 @@ class MetaData {
 
     static fromJSON(jsonObject) {
         let metaData = new MetaData(null, null);
-        metaData.lastUpdate = jsonObject.lastupdate;
-        metaData.nextUpdate = jsonObject.nextupdate;
+        metaData.lastUpdate = jsonObject.lastupdate[0];
+        metaData.nextUpdate = jsonObject.nextupdate[0];
         return metaData;
     }
 }
@@ -151,8 +151,8 @@ class Pressure {
 
     static fromJSON(jsonObject) {
         let pressure = new Pressure(null, null);
-        pressure.value = value;
-        pressure.unit = unit;
+        pressure.value = jsonObject.value;
+        pressure.unit = jsonObject.unit;
         return pressure;
     }
 }
@@ -172,15 +172,15 @@ class SlottedForecast {
 
     static fromJSON(jsonObject) {
         let slottedForecast = new SlottedForecast(null, null, null, null, null, null, null, null, null);
-        slottedForecast.from = jsonObject.from;
-        slottedForecast.to = jsonObject.to;
-        slottedForecast.period = jsonObject.period;
-        slottedForecast.icon = WeatherIcon.fromJSON(jsonObject.symbol);
-        slottedForecast.precipitation = jsonObject.precipitation;
-        slottedForecast.windDirection = WindDirection.fromJSON(jsonObject.windDirection);
-        slottedForecast.windSpeed = WindSpeed.fromJSON(jsonObject.windSpeed);
-        slottedForecast.temperature = Temperature.fromJSON(jsonObject.temperature);
-        slottedForecast.pressure = Pressure.fromJSON(jsonObject.pressure);
+        slottedForecast.from = jsonObject.$.from;
+        slottedForecast.to = jsonObject.$.to;
+        slottedForecast.period = jsonObject.$.period;
+        slottedForecast.icon = WeatherIcon.fromJSON(jsonObject.symbol[0].$);
+        slottedForecast.precipitation = jsonObject.precipitation[0].$.value;
+        slottedForecast.windDirection = WindDirection.fromJSON(jsonObject.windDirection[0].$);
+        slottedForecast.windSpeed = WindSpeed.fromJSON(jsonObject.windSpeed[0].$);
+        slottedForecast.temperature = Temperature.fromJSON(jsonObject.temperature[0].$);
+        slottedForecast.pressure = Pressure.fromJSON(jsonObject.pressure[0].$);
         return slottedForecast;
     }
 }
@@ -193,7 +193,7 @@ class Forecast {
     static fromJSON(jsonObject) {
         let foreCast = new Forecast([]);
         jsonObject.forEach((elem) => {
-            foreCast.slottedForecasts.push(SlottedForecast.fromJSON(elem.time));
+            foreCast.slottedForecasts.push(SlottedForecast.fromJSON(elem));
         });
         return foreCast;
     }
@@ -209,10 +209,12 @@ class WeatherData {
 
     static fromJSON(jsonObject) {
         let weatherData = new WeatherData(null, null, null, null);
-        weatherData.geoLocation = GeoLocation.fromJSON(jsonObject.location);
-        weatherData.meta = MetaData.fromJSON(jsonObject.meta);
-        weatherData.sun = Sun.fromJSON(jsonObject.sun);
-        weatherData.forecast = Forecast.fromJSON(jsonObject.forecast.tabular);
+        weatherData.geoLocation = GeoLocation.fromJSON(jsonObject.location[0]);
+        weatherData.meta = MetaData.fromJSON(jsonObject.meta[0]);
+        weatherData.sun = Sun.fromJSON(jsonObject.sun[0].$);
+        weatherData.forecast = Forecast.fromJSON(jsonObject.forecast[0].tabular[0].time);
         return weatherData;
     }
 }
+
+module.exports = WeatherData;

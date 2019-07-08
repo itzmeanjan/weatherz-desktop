@@ -1,6 +1,8 @@
 'use strict';
 const http = require('http');
 const xml2JS = require('xml2js');
+const WeatherData = require('./model/data');
+
 function query(url) {
     return new Promise((resolve, reject) => {
         try {
@@ -18,7 +20,7 @@ function query(url) {
                         if (err !== undefined && err !== null)
                             reject('error');
                         else
-                            resolve(result);
+                            resolve(WeatherData.fromJSON(result.weatherdata));
                     });
                 }).on('error', (err) => {
                     reject('error');
