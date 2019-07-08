@@ -19,7 +19,9 @@ app.addListener('ready', () => {
     );
     mainWindow.loadFile("./pages/main.html");
 });
-let currentCountrySelection, currentPlaceSelection, selectedPlace;
+// selected country, place and pair of them holder
+// weatherForecast will hold an instance of WeatherData class, which will eventually keep record of weather for selected place
+let currentCountrySelection, currentPlaceSelection, selectedPlace, weatherForecast;
 ipcMain.on('DOMContentLoaded', (event) =>
     require('./countryList').get.then(
         (data) => event.reply('CountryList', data),
@@ -39,8 +41,6 @@ ipcMain.on('AddPlace', (event, data) => {
     currentPlaceSelection = data;
     require('./weatherURL').get(currentCountrySelection, currentPlaceSelection).then((value) => {
         selectedPlace = value;
-        console.log(selectedPlace);
-    }, (err) => {
-        console.log(err);
-    });
+        require('./weatherQuery')(selectedPlace.url).then((resp) => { weatherForecast = resp; console.log(weatherForecast); }, (err) => { console.log(err); });
+    }, (err) => { console.log(err); });
 });
