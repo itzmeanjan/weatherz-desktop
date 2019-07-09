@@ -13,13 +13,18 @@ except ImportError as e:
 
 
 def __pushData__(dbName: str, userName: str, password: str, tableName: str, dataset: List[Tuple[str, str]]) -> bool:
+    '''
+        Takes dataset in form of `List[Tuple[str, str]]`, and pushed it to database, iteratively
+
+        Returns boolean value to denote status of operation.
+    '''
     target_value = False
     try:
         if(not dataset):
             raise Exception('no data to push')
         conn = psql.connect(database=dbName, user=userName, password=password)
         cursor = conn.cursor()
-        for count, iso, outline in enumerate(dataset):
+        for count, (iso, outline) in enumerate(dataset):
             cursor.execute('insert into {} values (%s, st_geogfromtext(%s))'.format(
                 tableName), (iso, outline))
             if(not count % 50):
@@ -36,9 +41,15 @@ def __pushData__(dbName: str, userName: str, password: str, tableName: str, data
 
 
 def __readData__(target_file: str = abspath(join(dirname(__file__), '../data/gadm36_0.shp'))) -> List[Tuple[str, str]]:
+    '''
+        Reads to be pushed dataset from shapefiles.
+
+        Here shapefile contains geography of all countries, stored only in a layer.
+    '''
     target_value = []
     try:
-        layer = geo.Open(target_file).GetLayer(0)
+        dataSource = geo.Open(target_file)
+        layer = dataSource.GetLayer(0)
         target_value = [(elem.GetField('GID_0'), elem.GetGeometryRef().ExportToWkt()) for elem in [
             layer.GetFeature(elem) for elem in range(layer.GetFeatureCount())]]
     except Exception:
@@ -48,6 +59,11 @@ def __readData__(target_file: str = abspath(join(dirname(__file__), '../data/gad
 
 
 def __createTable__(dbName: str, userName: str, password: str, tableName: str) -> bool:
+    '''
+        Creates table within provided database. If it already exists,
+        drops it first and then creates it. Also creates a gist( outline ) based index,
+        where outline is a field, which will be storing outline geography of a country.
+    '''
     target_value = False
     try:
         conn = psql.connect(database=dbName, user=userName, password=password)
@@ -68,6 +84,11 @@ def __createTable__(dbName: str, userName: str, password: str, tableName: str) -
 
 
 def app(dbName: str = 'countrymap', userName: str = 'postgres', password: str = '@njan5m3dB', tableName: str = 'map') -> bool:
+    '''
+        Before invoking this function make sure you've installed postgresql on your system properly.
+
+        And also download postgis extension, enable so for database `countrymap`.
+    '''
     target_value = False
     try:
         if(__createTable__(dbName=dbName, userName=userName, password=password, tableName=tableName)):
