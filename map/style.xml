@@ -3,11 +3,11 @@
         <Rule>
             <PolygonSymbolizer fill="#424242" />
         </Rule>
-        <Rule>
+       <!-- <Rule>
             <TextSymbolizer face-name="DejaVu Sans Book" size="12" fill="yellow" allow-overlap="false">
                 [NAME_0]
             </TextSymbolizer>
-        </Rule>
+        </Rule>-->
     </Style>
     <Layer name="layer1">
         <StyleName>style1</StyleName>
