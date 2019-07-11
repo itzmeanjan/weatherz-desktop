@@ -1,220 +1,224 @@
 'use strict';
 
 class TimeZone {
-    // utcOffset is in `minute`
-    constructor(id, utcOffset) {
-        this.id = id;
-        this.utcOffset = utcOffset;
-    }
+  // utcOffset is in `minute`
+  constructor(id, utcOffset) {
+    this.id = id;
+    this.utcOffset = utcOffset;
+  }
 
-    static fromJSON(jsonObject) {
-        let timeZone = new TimeZone(null, null);
-        timeZone.id = jsonObject.id;
-        timeZone.utcOffset = jsonObject.utcoffsetMinutes;
-        return timeZone;
-    }
+  static fromJSON(jsonObject) {
+    let timeZone = new TimeZone(null, null);
+    timeZone.id = jsonObject.id;
+    timeZone.utcOffset = jsonObject.utcoffsetMinutes;
+    return timeZone;
+  }
 }
 
 class LonLat {
-    // geonameid is from GeoNames Database, can be found here https://github.com/itzmeanjan/countryAndWeather
-    constructor(longitude, latitude, altitude, geonameid) {
-        this.longitude = longitude;
-        this.latitude = latitude;
-        this.altitude = altitude;
-        this.geonameid = geonameid;
-    }
+  // geonameid is from GeoNames Database, can be found here
+  // https://github.com/itzmeanjan/countryAndWeather
+  constructor(longitude, latitude, altitude, geonameid) {
+    this.longitude = longitude;
+    this.latitude = latitude;
+    this.altitude = altitude;
+    this.geonameid = geonameid;
+  }
 
-    static fromJSON(jsonObject) {
-        let lonLat = new LonLat(null, null, null, null);
-        lonLat.longitude = jsonObject.longitude;
-        lonLat.latitude = jsonObject.latitude;
-        lonLat.altitude = jsonObject.altitude;
-        lonLat.geonameid = jsonObject.geonameid;
-        return lonLat;
-    }
+  static fromJSON(jsonObject) {
+    let lonLat = new LonLat(null, null, null, null);
+    lonLat.longitude = jsonObject.longitude;
+    lonLat.latitude = jsonObject.latitude;
+    lonLat.altitude = jsonObject.altitude;
+    lonLat.geonameid = jsonObject.geonameid;
+    return lonLat;
+  }
 }
 
 class GeoLocation {
-    constructor(name, type, country, tz, lonlat) {
-        this.name = name;
-        this.type = type;
-        this.country = country;
-        this.tz = tz;
-        this.lonlat = lonlat;
-    }
+  constructor(name, type, country, tz, lonlat) {
+    this.name = name;
+    this.type = type;
+    this.country = country;
+    this.tz = tz;
+    this.lonlat = lonlat;
+  }
 
-    static fromJSON(jsonObject) {
-        let geoLocation = new GeoLocation(null, null, null, null, null);
-        geoLocation.name = jsonObject.name[0];
-        geoLocation.type = jsonObject.type[0];
-        geoLocation.country = jsonObject.country[0];
-        geoLocation.tz = TimeZone.fromJSON(jsonObject.timezone[0].$);
-        geoLocation.lonlat = LonLat.fromJSON(jsonObject.location[0].$);
-        return geoLocation;
-    }
+  static fromJSON(jsonObject) {
+    let geoLocation = new GeoLocation(null, null, null, null, null);
+    geoLocation.name = jsonObject.name[0];
+    geoLocation.type = jsonObject.type[0];
+    geoLocation.country = jsonObject.country[0];
+    geoLocation.tz = TimeZone.fromJSON(jsonObject.timezone[0].$);
+    geoLocation.lonlat = LonLat.fromJSON(jsonObject.location[0].$);
+    return geoLocation;
+  }
 }
 
 class MetaData {
-    constructor(lastUpdate, nextUpdate) {
-        this.lastUpdate = lastUpdate;
-        this.nextUpdate = nextUpdate;
-    }
+  constructor(lastUpdate, nextUpdate) {
+    this.lastUpdate = lastUpdate;
+    this.nextUpdate = nextUpdate;
+  }
 
-    static fromJSON(jsonObject) {
-        let metaData = new MetaData(null, null);
-        metaData.lastUpdate = jsonObject.lastupdate[0];
-        metaData.nextUpdate = jsonObject.nextupdate[0];
-        return metaData;
-    }
+  static fromJSON(jsonObject) {
+    let metaData = new MetaData(null, null);
+    metaData.lastUpdate = jsonObject.lastupdate[0];
+    metaData.nextUpdate = jsonObject.nextupdate[0];
+    return metaData;
+  }
 }
 
 class Sun {
-    constructor(rise, set) {
-        this.rise = rise;
-        this.set = set;
-    }
+  constructor(rise, set) {
+    this.rise = rise;
+    this.set = set;
+  }
 
-    static fromJSON(jsonObject) {
-        let sun = new Sun(null, null);
-        sun.rise = jsonObject.rise;
-        sun.set = jsonObject.set;
-        return sun;
-    }
+  static fromJSON(jsonObject) {
+    let sun = new Sun(null, null);
+    sun.rise = jsonObject.rise;
+    sun.set = jsonObject.set;
+    return sun;
+  }
 }
 
 class WeatherIcon {
-    constructor(name, id) {
-        this.name = name;
-        this.id = id;
-    }
+  constructor(name, id) {
+    this.name = name;
+    this.id = id;
+  }
 
-    static fromJSON(jsonObject) {
-        let weatherIcon = new WeatherIcon(null, null);
-        weatherIcon.name = jsonObject.name;
-        weatherIcon.id = jsonObject.var;
-        return weatherIcon;
-    }
+  static fromJSON(jsonObject) {
+    let weatherIcon = new WeatherIcon(null, null);
+    weatherIcon.name = jsonObject.name;
+    weatherIcon.id = jsonObject.var;
+    return weatherIcon;
+  }
 }
 
 class WindDirection {
-    constructor(name, code, degree) {
-        this.name = name;
-        this.code = code;
-        this.degree = degree;
-    }
+  constructor(name, code, degree) {
+    this.name = name;
+    this.code = code;
+    this.degree = degree;
+  }
 
-    static fromJSON(jsonObject) {
-        let windDirection = new WindDirection(null, null, null);
-        windDirection.name = jsonObject.name;
-        windDirection.code = jsonObject.code;
-        windDirection.degree = jsonObject.degree;
-        return windDirection;
-    }
+  static fromJSON(jsonObject) {
+    let windDirection = new WindDirection(null, null, null);
+    windDirection.name = jsonObject.name;
+    windDirection.code = jsonObject.code;
+    windDirection.degree = jsonObject.degree;
+    return windDirection;
+  }
 }
 
 class WindSpeed {
-    // speed is in `meters per second`
-    constructor(name, speed) {
-        this.name = name;
-        this.speed = speed;
-    }
+  // speed is in `meters per second`
+  constructor(name, speed) {
+    this.name = name;
+    this.speed = speed;
+  }
 
-    static fromJSON(jsonObject) {
-        let windSpeed = new WindSpeed(null, null);
-        windSpeed.name = jsonObject.name;
-        windSpeed.speed = jsonObject.mps;
-        return windSpeed;
-    }
+  static fromJSON(jsonObject) {
+    let windSpeed = new WindSpeed(null, null);
+    windSpeed.name = jsonObject.name;
+    windSpeed.speed = jsonObject.mps;
+    return windSpeed;
+  }
 }
 
 class Temperature {
-    // by default unit will be in `Celcius`
-    constructor(value, unit) {
-        this.value = value;
-        this.unit = unit;
-    }
+  // by default unit will be in `Celcius`
+  constructor(value, unit) {
+    this.value = value;
+    this.unit = unit;
+  }
 
-    static fromJSON(jsonObject) {
-        let temperature = new Temperature(null, null);
-        temperature.value = jsonObject.value;
-        temperature.unit = jsonObject.unit;
-        return temperature;
-    }
+  static fromJSON(jsonObject) {
+    let temperature = new Temperature(null, null);
+    temperature.value = jsonObject.value;
+    temperature.unit = jsonObject.unit;
+    return temperature;
+  }
 }
 
 class Pressure {
-    // by default unit will be in `hPa`
-    constructor(value, unit) {
-        this.value = value;
-        this.unit = unit;
-    }
+  // by default unit will be in `hPa`
+  constructor(value, unit) {
+    this.value = value;
+    this.unit = unit;
+  }
 
-    static fromJSON(jsonObject) {
-        let pressure = new Pressure(null, null);
-        pressure.value = jsonObject.value;
-        pressure.unit = jsonObject.unit;
-        return pressure;
-    }
+  static fromJSON(jsonObject) {
+    let pressure = new Pressure(null, null);
+    pressure.value = jsonObject.value;
+    pressure.unit = jsonObject.unit;
+    return pressure;
+  }
 }
 
 class SlottedForecast {
-    constructor(from, to, period, icon, precipitation, windDirection, windSpeed, temperature, pressure) {
-        this.from = from;
-        this.to = to;
-        this.period = period;
-        this.icon = icon;
-        this.precipitation = precipitation;
-        this.windDirection = windDirection;
-        this.windSpeed = windSpeed;
-        this.temperature = temperature;
-        this.pressure = pressure;
-    }
+  constructor(from, to, period, icon, precipitation, windDirection, windSpeed,
+              temperature, pressure) {
+    this.from = from;
+    this.to = to;
+    this.period = period;
+    this.icon = icon;
+    this.precipitation = precipitation;
+    this.windDirection = windDirection;
+    this.windSpeed = windSpeed;
+    this.temperature = temperature;
+    this.pressure = pressure;
+  }
 
-    static fromJSON(jsonObject) {
-        let slottedForecast = new SlottedForecast(null, null, null, null, null, null, null, null, null);
-        slottedForecast.from = jsonObject.$.from;
-        slottedForecast.to = jsonObject.$.to;
-        slottedForecast.period = jsonObject.$.period;
-        slottedForecast.icon = WeatherIcon.fromJSON(jsonObject.symbol[0].$);
-        slottedForecast.precipitation = jsonObject.precipitation[0].$.value;
-        slottedForecast.windDirection = WindDirection.fromJSON(jsonObject.windDirection[0].$);
-        slottedForecast.windSpeed = WindSpeed.fromJSON(jsonObject.windSpeed[0].$);
-        slottedForecast.temperature = Temperature.fromJSON(jsonObject.temperature[0].$);
-        slottedForecast.pressure = Pressure.fromJSON(jsonObject.pressure[0].$);
-        return slottedForecast;
-    }
+  static fromJSON(jsonObject) {
+    let slottedForecast = new SlottedForecast(null, null, null, null, null,
+                                              null, null, null, null);
+    slottedForecast.from = jsonObject.$.from;
+    slottedForecast.to = jsonObject.$.to;
+    slottedForecast.period = jsonObject.$.period;
+    slottedForecast.icon = WeatherIcon.fromJSON(jsonObject.symbol[0].$);
+    slottedForecast.precipitation = jsonObject.precipitation[0].$.value;
+    slottedForecast.windDirection =
+        WindDirection.fromJSON(jsonObject.windDirection[0].$);
+    slottedForecast.windSpeed = WindSpeed.fromJSON(jsonObject.windSpeed[0].$);
+    slottedForecast.temperature =
+        Temperature.fromJSON(jsonObject.temperature[0].$);
+    slottedForecast.pressure = Pressure.fromJSON(jsonObject.pressure[0].$);
+    return slottedForecast;
+  }
 }
 
 class Forecast {
-    constructor(slottedForecasts) {
-        this.slottedForecasts = slottedForecasts;
-    }
+  constructor(slottedForecasts) { this.slottedForecasts = slottedForecasts; }
 
-    static fromJSON(jsonObject) {
-        let foreCast = new Forecast([]);
-        jsonObject.forEach((elem) => {
-            foreCast.slottedForecasts.push(SlottedForecast.fromJSON(elem));
-        });
-        return foreCast;
-    }
+  static fromJSON(jsonObject) {
+    let foreCast = new Forecast([]);
+    jsonObject.forEach((elem) => {
+      foreCast.slottedForecasts.push(SlottedForecast.fromJSON(elem));
+    });
+    return foreCast;
+  }
 }
 
 class WeatherData {
-    constructor(geoLocation, meta, sun, forecast) {
-        this.geoLocation = geoLocation;
-        this.meta = meta;
-        this.sun = sun;
-        this.forecast = forecast;
-    }
+  constructor(geoLocation, meta, sun, forecast) {
+    this.geoLocation = geoLocation;
+    this.meta = meta;
+    this.sun = sun;
+    this.forecast = forecast;
+  }
 
-    static fromJSON(jsonObject) {
-        let weatherData = new WeatherData(null, null, null, null);
-        weatherData.geoLocation = GeoLocation.fromJSON(jsonObject.location[0]);
-        weatherData.meta = MetaData.fromJSON(jsonObject.meta[0]);
-        weatherData.sun = Sun.fromJSON(jsonObject.sun[0].$);
-        weatherData.forecast = Forecast.fromJSON(jsonObject.forecast[0].tabular[0].time);
-        return weatherData;
-    }
+  static fromJSON(jsonObject) {
+    let weatherData = new WeatherData(null, null, null, null);
+    weatherData.geoLocation = GeoLocation.fromJSON(jsonObject.location[0]);
+    weatherData.meta = MetaData.fromJSON(jsonObject.meta[0]);
+    weatherData.sun = Sun.fromJSON(jsonObject.sun[0].$);
+    weatherData.forecast =
+        Forecast.fromJSON(jsonObject.forecast[0].tabular[0].time);
+    return weatherData;
+  }
 }
 
 module.exports = WeatherData;

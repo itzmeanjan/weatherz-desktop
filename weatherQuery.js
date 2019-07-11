@@ -5,49 +5,45 @@ const WeatherData = require('./model/data');
 
 // this one will handle httpResponse
 // if response status code is 200, we're good to go
-// if 301, then it's a redirect, then we try to handle so, by using redirected url
-// otherwise, upto current situation, we can assume other status code will be treated as error, and won't be handled
+// if 301, then it's a redirect, then we try to handle so, by using redirected
+// url otherwise, upto current situation, we can assume other status code will
+// be treated as error, and won't be handled
 
 function _handler(res, resolve, reject) {
-    if (res.statusCode === 301) {
-        if (res.headers.location !== undefined && res.headers.location !== null)
-            http.get(res.headers.location, (res) =>
-                _handler(res, resolve, reject));
-    }
-    else if (res.statusCode === 200) {
-        let data = '';
-        res.on('data', (chunk) => {
-            data += chunk; // keeps reading data
-        });
-        res.on('end', () => { // when data flow ends, parses XML response to JSON
-            xml2JS.parseString(data, (err, result) => {
-                if (err !== undefined && err !== null)
-                    reject('error');
-                else
-                    resolve(WeatherData.fromJSON(result.weatherdata)); // this is where main data extraction is done
-            });
-        }).on('error', (err) => {
-            reject('error');
-        });
-    }
-    else {
-        res.resume();
-        reject('response not ok');
-    }
+  if (res.statusCode === 301) {
+    if (res.headers.location !== undefined && res.headers.location !== null)
+      http.get(res.headers.location, (res) => _handler(res, resolve, reject));
+  } else if (res.statusCode === 200) {
+    let data = '';
+    res.on('data', (chunk) => {
+      data += chunk; // keeps reading data
+    });
+    res.on('end', () => { // when data flow ends, parses XML response to JSON
+         xml2JS.parseString(data, (err, result) => {
+           if (err !== undefined && err !== null)
+             reject('error');
+           else
+             resolve(WeatherData.fromJSON(
+                 result.weatherdata)); // this is where main data extraction is
+                                       // done
+         });
+       }).on('error', (err) => { reject('error'); });
+  } else {
+    res.resume();
+    reject('response not ok');
+  }
 }
 
 // Queries are made using this function
 
 function query(url) {
-    return new Promise((resolve, reject) => {
-        try {
-            http.get(url, (res) =>
-                _handler(res, resolve, reject));
-        }
-        catch (e) {
-            reject('error');
-        }
-    });
+  return new Promise((resolve, reject) => {
+    try {
+      http.get(url, (res) => _handler(res, resolve, reject));
+    } catch (e) {
+      reject('error');
+    }
+  });
 }
 
 module.exports = query;
