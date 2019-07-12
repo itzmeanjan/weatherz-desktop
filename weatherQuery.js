@@ -49,8 +49,12 @@ function query(url) {
   });
 }
 
-// module.exports = query;
+module.exports = query;
 
+// following section was used for testing purposes
+
+/*
 query(
   "http://yr.no/place/Pakistan/Khyber_Pakhtunkhwa/Swāt_District/forecast.xml")
   .then((data) => console.log(data.toJSON()), (err) => console.log(err));
+*/

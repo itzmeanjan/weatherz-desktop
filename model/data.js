@@ -92,8 +92,8 @@ class MetaData {
 
   static fromJSON(jsonObject) {
     let metaData = new MetaData(null, null);
-    metaData.lastUpdate = jsonObject.lastupdate[0];
-    metaData.nextUpdate = jsonObject.nextupdate[0];
+    metaData.lastUpdate = Date.parse(jsonObject.lastupdate[0]) / 1000;
+    metaData.nextUpdate = Date.parse(jsonObject.nextupdate[0]) / 1000;
     return metaData;
   }
 
@@ -114,8 +114,8 @@ class Sun {
 
   static fromJSON(jsonObject) {
     let sun = new Sun(null, null);
-    sun.rise = jsonObject.rise;
-    sun.set = jsonObject.set;
+    sun.rise = Date.parse(jsonObject.rise) / 1000;
+    sun.set = Date.parse(jsonObject.set) / 1000;
     return sun;
   }
 
@@ -261,8 +261,8 @@ class SlottedForecast {
   static fromJSON(jsonObject) {
     let slottedForecast = new SlottedForecast(null, null, null, null, null,
       null, null, null, null);
-    slottedForecast.from = jsonObject.$.from;
-    slottedForecast.to = jsonObject.$.to;
+    slottedForecast.from = Date.parse(jsonObject.$.from) / 1000;
+    slottedForecast.to = Date.parse(jsonObject.$.to) / 1000;
     slottedForecast.period = jsonObject.$.period;
     slottedForecast.icon = WeatherIcon.fromJSON(jsonObject.symbol[0].$);
     slottedForecast.precipitation = jsonObject.precipitation[0].$.value;
@@ -335,5 +335,8 @@ class WeatherData {
     };
   }
 }
+
+// All date time related field(s) will hold timestamp ( from Unix epoch )
+// Timestamp will be in `second`
 
 module.exports = WeatherData;

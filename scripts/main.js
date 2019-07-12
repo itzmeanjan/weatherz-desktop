@@ -1,5 +1,23 @@
 'use strict';
 const { ipcRenderer } = require('electron');
+
+// Utility function to perform window clean up (html element clean up )
+// so that new elements can be easily added
+
+function windowCleaner(parentObj) {
+    let target = false;
+    try {
+        while (parentObj.hasChildNodes()) {
+            parentObj.removeChild(parentObj.firstChild);
+        }
+        target = true;
+    } catch (e) {
+        target = false;
+    } finally {
+        return target;
+    }
+}
+
 window.addEventListener('DOMContentLoaded', (event) => {
     let selectCountry;
     let placeData;
@@ -93,9 +111,11 @@ window.addEventListener('DOMContentLoaded', (event) => {
             addButton.id = 'addButton';
             addButton.addEventListener('click', (ev) => {
                 if (placeData.some(
-                    (el) => el === document.getElementById('searchPlace').value))
-                    ipcRenderer.send('AddPlace',
-                        document.getElementById('searchPlace').value);
+                    (el) => el === document.getElementById('searchPlace').value)) {
+                    windowCleaner(document.body);
+                    // ipcRenderer.send('AddPlace',
+                    // document.getElementById('searchPlace').value);
+                }
             });
             addButton.textContent = 'Add Place';
             addButton.style.backgroundColor = '#44de22';
