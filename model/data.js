@@ -13,6 +13,14 @@ class TimeZone {
     timeZone.utcOffset = jsonObject.utcoffsetMinutes;
     return timeZone;
   }
+
+  // Returns a JSON equivalent representation for TimeZone
+  toJSON() {
+    return {
+      id: this.id,
+      utcOffset: this.utcOffset
+    };
+  }
 }
 
 class LonLat {
@@ -30,8 +38,18 @@ class LonLat {
     lonLat.longitude = jsonObject.longitude;
     lonLat.latitude = jsonObject.latitude;
     lonLat.altitude = jsonObject.altitude;
-    lonLat.geonameid = jsonObject.geonameid;
+    lonLat.geonameid = jsonObject.geobaseid;
     return lonLat;
+  }
+
+  // Returns a JSON equivalent representation for LonLat
+  toJSON() {
+    return {
+      longitude: this.longitude,
+      latitude: this.latitude,
+      altitude: this.altitude,
+      geonameid: this.geonameid
+    };
   }
 }
 
@@ -53,6 +71,17 @@ class GeoLocation {
     geoLocation.lonlat = LonLat.fromJSON(jsonObject.location[0].$);
     return geoLocation;
   }
+
+  // Returns a JSON equivalent representation for GeoLocation
+  toJSON() {
+    return {
+      name: this.name,
+      type: this.type,
+      country: this.country,
+      tz: this.tz.toJSON(),
+      lonlat: this.lonlat.toJSON()
+    };
+  }
 }
 
 class MetaData {
@@ -66,6 +95,14 @@ class MetaData {
     metaData.lastUpdate = jsonObject.lastupdate[0];
     metaData.nextUpdate = jsonObject.nextupdate[0];
     return metaData;
+  }
+
+  // Returns a JSON equivalent representation for MetaData
+  toJSON() {
+    return {
+      lastUpdate: this.lastUpdate,
+      nextUpdate: this.nextUpdate
+    };
   }
 }
 
@@ -81,6 +118,14 @@ class Sun {
     sun.set = jsonObject.set;
     return sun;
   }
+
+  // Returns a JSON equivalent representation for Sun
+  toJSON() {
+    return {
+      rise: this.rise,
+      set: this.set
+    };
+  }
 }
 
 class WeatherIcon {
@@ -94,6 +139,14 @@ class WeatherIcon {
     weatherIcon.name = jsonObject.name;
     weatherIcon.id = jsonObject.var;
     return weatherIcon;
+  }
+
+  // Returns a JSON equivalent representation for WeatherIcon
+  toJSON() {
+    return {
+      name: this.name,
+      id: this.id
+    };
   }
 }
 
@@ -111,6 +164,15 @@ class WindDirection {
     windDirection.degree = jsonObject.degree;
     return windDirection;
   }
+
+  // Returns a JSON equivalent representation for WindDirection
+  toJSON() {
+    return {
+      name: this.name,
+      code: this.code,
+      degree: this.degree
+    };
+  }
 }
 
 class WindSpeed {
@@ -125,6 +187,14 @@ class WindSpeed {
     windSpeed.name = jsonObject.name;
     windSpeed.speed = jsonObject.mps;
     return windSpeed;
+  }
+
+  // Returns a JSON equivalent representation for WindSpeed
+  toJSON() {
+    return {
+      name: this.name,
+      speed: this.speed
+    };
   }
 }
 
@@ -141,6 +211,14 @@ class Temperature {
     temperature.unit = jsonObject.unit;
     return temperature;
   }
+
+  // Returns a JSON equivalent representation for Temperature
+  toJSON() {
+    return {
+      value: this.value,
+      unit: this.unit
+    };
+  }
 }
 
 class Pressure {
@@ -156,11 +234,19 @@ class Pressure {
     pressure.unit = jsonObject.unit;
     return pressure;
   }
+
+  // Returns a JSON equivalent representation for Pressure
+  toJSON() {
+    return {
+      value: this.value,
+      unit: this.unit
+    };
+  }
 }
 
 class SlottedForecast {
   constructor(from, to, period, icon, precipitation, windDirection, windSpeed,
-              temperature, pressure) {
+    temperature, pressure) {
     this.from = from;
     this.to = to;
     this.period = period;
@@ -174,19 +260,34 @@ class SlottedForecast {
 
   static fromJSON(jsonObject) {
     let slottedForecast = new SlottedForecast(null, null, null, null, null,
-                                              null, null, null, null);
+      null, null, null, null);
     slottedForecast.from = jsonObject.$.from;
     slottedForecast.to = jsonObject.$.to;
     slottedForecast.period = jsonObject.$.period;
     slottedForecast.icon = WeatherIcon.fromJSON(jsonObject.symbol[0].$);
     slottedForecast.precipitation = jsonObject.precipitation[0].$.value;
     slottedForecast.windDirection =
-        WindDirection.fromJSON(jsonObject.windDirection[0].$);
+      WindDirection.fromJSON(jsonObject.windDirection[0].$);
     slottedForecast.windSpeed = WindSpeed.fromJSON(jsonObject.windSpeed[0].$);
     slottedForecast.temperature =
-        Temperature.fromJSON(jsonObject.temperature[0].$);
+      Temperature.fromJSON(jsonObject.temperature[0].$);
     slottedForecast.pressure = Pressure.fromJSON(jsonObject.pressure[0].$);
     return slottedForecast;
+  }
+
+  // Returns a JSON equivalent representation for SlottedForecast
+  toJSON() {
+    return {
+      from: this.from,
+      to: this.to,
+      period: this.period,
+      icon: this.icon.toJSON(),
+      precipitation: this.precipitation,
+      windDirection: this.windDirection.toJSON(),
+      windSpeed: this.windSpeed.toJSON(),
+      temperature: this.temperature.toJSON(),
+      pressure: this.pressure.toJSON()
+    };
   }
 }
 
@@ -195,10 +296,14 @@ class Forecast {
 
   static fromJSON(jsonObject) {
     let foreCast = new Forecast([]);
-    jsonObject.forEach((elem) => {
-      foreCast.slottedForecasts.push(SlottedForecast.fromJSON(elem));
-    });
+    // using functional construct
+    foreCast.slottedForecasts = jsonObject.map((elem) => SlottedForecast.fromJSON(elem));
     return foreCast;
+  }
+
+  // Returns a JSON equivalent representation for Forecast
+  toJSON() {
+    return this.slottedForecasts.map((elem) => elem.toJSON());
   }
 }
 
@@ -216,8 +321,18 @@ class WeatherData {
     weatherData.meta = MetaData.fromJSON(jsonObject.meta[0]);
     weatherData.sun = Sun.fromJSON(jsonObject.sun[0].$);
     weatherData.forecast =
-        Forecast.fromJSON(jsonObject.forecast[0].tabular[0].time);
+      Forecast.fromJSON(jsonObject.forecast[0].tabular[0].time);
     return weatherData;
+  }
+
+  // Returns a JSON equivalent representation for WeatherData
+  toJSON() {
+    return {
+      geoLocation: this.geoLocation.toJSON(),
+      meta: this.meta.toJSON(),
+      sun: this.sun.toJSON(),
+      forecast: this.forecast.toJSON()
+    };
   }
 }
 

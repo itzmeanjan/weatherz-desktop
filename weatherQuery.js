@@ -19,15 +19,15 @@ function _handler(res, resolve, reject) {
       data += chunk; // keeps reading data
     });
     res.on('end', () => { // when data flow ends, parses XML response to JSON
-         xml2JS.parseString(data, (err, result) => {
-           if (err !== undefined && err !== null)
-             reject('error');
-           else
-             resolve(WeatherData.fromJSON(
-                 result.weatherdata)); // this is where main data extraction is
-                                       // done
-         });
-       }).on('error', (err) => { reject('error'); });
+      xml2JS.parseString(data, (err, result) => {
+        if (err !== undefined && err !== null)
+          reject('error');
+        else
+          resolve(WeatherData.fromJSON(
+            result.weatherdata)); // this is where main data extraction is
+        // done
+      });
+    }).on('error', (err) => { reject('error'); });
   } else {
     res.resume();
     reject('response not ok');
@@ -35,15 +35,22 @@ function _handler(res, resolve, reject) {
 }
 
 // Queries are made using this function
+// *** URL passed to function doesn't need to be URI encoded, it'll be done internally
+// So be careful with that :)
 
 function query(url) {
   return new Promise((resolve, reject) => {
     try {
-      http.get(url, (res) => _handler(res, resolve, reject));
+      http.get(encodeURI(url), (res) => _handler(res, resolve, reject));
     } catch (e) {
+      console.log(e);
       reject('error');
     }
   });
 }
 
-module.exports = query;
+// module.exports = query;
+
+query(
+  "http://yr.no/place/Pakistan/Khyber_Pakhtunkhwa/Swāt_District/forecast.xml")
+  .then((data) => console.log(data.toJSON()), (err) => console.log(err));
