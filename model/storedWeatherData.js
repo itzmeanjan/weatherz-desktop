@@ -10,7 +10,7 @@ class TimeZone {
   static fromJSON(jsonObject) {
     let timeZone = new TimeZone(null, null);
     timeZone.id = jsonObject.id;
-    timeZone.utcOffset = jsonObject.utcoffsetMinutes;
+    timeZone.utcOffset = jsonObject.utcOffset;
     return timeZone;
   }
 
@@ -33,7 +33,7 @@ class LonLat {
     lonLat.longitude = jsonObject.longitude;
     lonLat.latitude = jsonObject.latitude;
     lonLat.altitude = jsonObject.altitude;
-    lonLat.geonameid = jsonObject.geobaseid;
+    lonLat.geonameid = jsonObject.geonameid;
     return lonLat;
   }
 
@@ -59,11 +59,11 @@ class GeoLocation {
 
   static fromJSON(jsonObject) {
     let geoLocation = new GeoLocation(null, null, null, null, null);
-    geoLocation.name = jsonObject.name[0];
-    geoLocation.type = jsonObject.type[0];
-    geoLocation.country = jsonObject.country[0];
-    geoLocation.tz = TimeZone.fromJSON(jsonObject.timezone[0].$);
-    geoLocation.lonlat = LonLat.fromJSON(jsonObject.location[0].$);
+    geoLocation.name = jsonObject.name;
+    geoLocation.type = jsonObject.type;
+    geoLocation.country = jsonObject.country;
+    geoLocation.tz = TimeZone.fromJSON(jsonObject.tz);
+    geoLocation.lonlat = LonLat.fromJSON(jsonObject.lonlat);
     return geoLocation;
   }
 
@@ -87,8 +87,8 @@ class MetaData {
 
   static fromJSON(jsonObject) {
     let metaData = new MetaData(null, null);
-    metaData.lastUpdate = Date.parse(jsonObject.lastupdate[0]) / 1000;
-    metaData.nextUpdate = Date.parse(jsonObject.nextupdate[0]) / 1000;
+    metaData.lastUpdate = jsonObject.lastUpdate;
+    metaData.nextUpdate = jsonObject.nextUpdate;
     return metaData;
   }
 
@@ -106,8 +106,8 @@ class Sun {
 
   static fromJSON(jsonObject) {
     let sun = new Sun(null, null);
-    sun.rise = Date.parse(jsonObject.rise) / 1000;
-    sun.set = Date.parse(jsonObject.set) / 1000;
+    sun.rise = jsonObject.rise;
+    sun.set = jsonObject.set;
     return sun;
   }
 
@@ -124,7 +124,7 @@ class WeatherIcon {
   static fromJSON(jsonObject) {
     let weatherIcon = new WeatherIcon(null, null);
     weatherIcon.name = jsonObject.name;
-    weatherIcon.id = jsonObject.var;
+    weatherIcon.id = jsonObject.id;
     return weatherIcon;
   }
 
@@ -224,17 +224,16 @@ class SlottedForecast {
   static fromJSON(jsonObject) {
     let slottedForecast = new SlottedForecast(null, null, null, null, null,
                                               null, null, null, null);
-    slottedForecast.from = Date.parse(jsonObject.$.from) / 1000;
-    slottedForecast.to = Date.parse(jsonObject.$.to) / 1000;
-    slottedForecast.period = jsonObject.$.period;
-    slottedForecast.icon = WeatherIcon.fromJSON(jsonObject.symbol[0].$);
-    slottedForecast.precipitation = jsonObject.precipitation[0].$.value;
+    slottedForecast.from = jsonObject.from;
+    slottedForecast.to = jsonObject.to;
+    slottedForecast.period = jsonObject.period;
+    slottedForecast.icon = WeatherIcon.fromJSON(jsonObject.icon);
+    slottedForecast.precipitation = jsonObject.precipitation;
     slottedForecast.windDirection =
-        WindDirection.fromJSON(jsonObject.windDirection[0].$);
-    slottedForecast.windSpeed = WindSpeed.fromJSON(jsonObject.windSpeed[0].$);
-    slottedForecast.temperature =
-        Temperature.fromJSON(jsonObject.temperature[0].$);
-    slottedForecast.pressure = Pressure.fromJSON(jsonObject.pressure[0].$);
+        WindDirection.fromJSON(jsonObject.windDirection);
+    slottedForecast.windSpeed = WindSpeed.fromJSON(jsonObject.windSpeed);
+    slottedForecast.temperature = Temperature.fromJSON(jsonObject.temperature);
+    slottedForecast.pressure = Pressure.fromJSON(jsonObject.pressure);
     return slottedForecast;
   }
 
@@ -279,11 +278,10 @@ class WeatherData {
 
   static fromJSON(jsonObject) {
     let weatherData = new WeatherData(null, null, null, null);
-    weatherData.geoLocation = GeoLocation.fromJSON(jsonObject.location[0]);
-    weatherData.meta = MetaData.fromJSON(jsonObject.meta[0]);
-    weatherData.sun = Sun.fromJSON(jsonObject.sun[0].$);
-    weatherData.forecast =
-        Forecast.fromJSON(jsonObject.forecast[0].tabular[0].time);
+    weatherData.geoLocation = GeoLocation.fromJSON(jsonObject.geoLocation);
+    weatherData.meta = MetaData.fromJSON(jsonObject.meta);
+    weatherData.sun = Sun.fromJSON(jsonObject.sun);
+    weatherData.forecast = Forecast.fromJSON(jsonObject.forecast);
     return weatherData;
   }
 
@@ -298,9 +296,36 @@ class WeatherData {
   }
 }
 
-// All date time related field(s) will hold timestamp ( from Unix epoch )
-// Timestamp will be in `second`
+class WeatherDataCollection {
+  constructor(weatherDataSet) { this.weatherDataSet = weatherDataSet; }
+
+  static fromJSON(jsonObject) {
+    let weatherDataCollection = new WeatherDataCollection([]);
+    weatherDataCollection.weatherDataSet =
+        jsonObject.map((elem) => WeatherData.fromJSON(elem));
+    return weatherDataCollection;
+  }
+
+  addAnother(weatherData) {
+    if (this.weatherDataSet !== undefined && this.weatherDataSet !== null)
+      this.weatherDataSet.push((weatherData instanceof WeatherData)
+                                   ? weatherData
+                                   : WeatherData.fromJSON(weatherData));
+    else
+      this.weatherDataSet = [ (weatherData instanceof WeatherData)
+                                  ? weatherData
+                                  : WeatherData.fromJSON(weatherData) ];
+    return this;
+  }
+
+  toJSON() {
+    return (this.weatherDataSet !== undefined && this.weatherDataSet !== null)
+               ? {dataSet : this.weatherDataSet.map((elem) => elem.toJSON())}
+               : {dataSet : []};
+  }
+}
 
 module.exports = {
-  WeatherData : WeatherData
-};
+  WeatherDataCollection : WeatherDataCollection,
+  instance : new WeatherDataCollection([])
+}

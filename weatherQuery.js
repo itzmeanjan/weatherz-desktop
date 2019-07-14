@@ -1,7 +1,7 @@
 'use strict';
 const http = require('http');
 const xml2JS = require('xml2js');
-const WeatherData = require('./model/data');
+const { WeatherData } = require('./model/data');
 
 // this one will handle httpResponse
 // if response status code is 200, we're good to go
@@ -12,7 +12,7 @@ const WeatherData = require('./model/data');
 function _handler(res, resolve, reject) {
   if (res.statusCode === 301) {
     if (res.headers.location !== undefined && res.headers.location !== null)
-      http.get(res.headers.location, (res) => _handler(res, resolve, reject));
+      http.get(res.headers.location, (res) => _handler(res, resolve, reject)); // in case of redirection
   } else if (res.statusCode === 200) {
     let data = '';
     res.on('data', (chunk) => {
