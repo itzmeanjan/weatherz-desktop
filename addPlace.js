@@ -32,11 +32,12 @@ function extractIt(target_file = './data/addedPlaces.json') {
 }
 
 // writes JSON stringified data into target file
-// JSON data, to be written, is passed in well formatted form
+// JSON data, to be written, is passed as `.model/place.AllPlaceEntries`
+// which will be JSONified with in this function
 
 function writeIt(data, target_file = './data/addedPlaces.json') {
     return new Promise((resolve, reject) => {
-        fs.writeFile(target_file, data, (err) => {
+        fs.writeFile(target_file, JSON.stringify(data.toJSON(), null, 4), (err) => {
             if (err !== undefined && err !== null)
                 reject('error');
             else
@@ -59,16 +60,11 @@ function addIt(placeData, target_file = './data/addedPlaces.json') {
     return new Promise(
         (reject, resolve) => extractIt(target_file).then(
             (value) =>
-                writeIt(JSON.stringify(value.appendAnother(placeData).toJSON(),
-                    null, 4), target_file)
-                    .then((val) => resolve(val), (err) => reject(err)),
+                resolve(value.appendAnother(placeData))
+            ,
             (err) =>
-                writeIt(JSON.stringify(
-                    require('./model/place').instance
-                        .appendAnother(placeData)
-                        .toJSON(),
-                    null, 4), target_file)
-                    .then((val) => resolve(val), (err) => reject(err))
+                resolve(require('./model/place').instance
+                    .appendAnother(placeData))
         ));
 }
 
@@ -76,13 +72,14 @@ function addIt(placeData, target_file = './data/addedPlaces.json') {
 
 module.exports = {
     addIt: addIt, // to add new record
-    extractIt: extractIt // to extract existing record(s)
+    extractIt: extractIt, // to extract existing record(s)
+    writeIt: writeIt // for writing JSON string data to target file
 };
 
 
 // following section was used to check whether it works as expected or not
 
 /*
-addIt({ name: 'Bolpur', url: 'http://yr.no/Bolpur.xml' })
+addIt({ name: 'Berlin', url: 'http://yr.no/Berlin.xml' })
     .then((val) => console.log(val), (err) => console.log(err));
 */
